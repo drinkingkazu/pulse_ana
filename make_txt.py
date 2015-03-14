@@ -4,7 +4,7 @@ import sys
 run = int(sys.argv[1])
 
 tch=TChain("ptree","")
-tch.AddFile('pulser_run%03d.root' % run)
+tch.AddFile('data_root/pulser_run%03d.root' % run)
 
 print tch.GetEntries()
 
@@ -29,8 +29,8 @@ for x in xrange(tch.GetEntries()):
     gain_a[crate][slot].append((femch,tch.amp))
     gain_q[crate][slot].append((femch,tch.charge))
 
-fout_a=open("run%03d_gain_amp.txt" % run,'w')
-fout_q=open("run%03d_gain_charge.txt" % run, 'w')
+fout_a=open("data_txt/run%03d_gain_amp.txt" % run,'w')
+fout_q=open("data_txt/run%03d_gain_charge.txt" % run, 'w')
 
 for crate in gain_a.keys():
     for slot in gain_a[crate].keys():

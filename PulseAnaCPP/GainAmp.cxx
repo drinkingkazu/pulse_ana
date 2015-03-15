@@ -37,8 +37,6 @@ void GainAmp::AnaFile(std::string name) {
   _tch->SetBranchAddress("slot",&_slot);
   _tch->SetBranchAddress("femch",&_femch);
 
-  float last_time=0;
-
   for(size_t i=0; i<_tch->GetEntries(); ++i) {
 
     _tch->GetEntry(i);
@@ -52,11 +50,11 @@ void GainAmp::AnaFile(std::string name) {
 
     bool pulsed = _mask.at(_crate).at(_slot).at(_femch);
 
-    if(_amp<20) continue;
+    //if(_amp<20) continue;
     //float tdiff = std::abs(last_time - _tstart);
 
     //if(pulsed && tdiff>10) {
-    if(pulsed){
+    if(pulsed && _amp>20){
 
       if(_pulsed_data.at(_crate).size()<=_slot)
 	_pulsed_data.at(_crate).resize(_slot+1,std::vector<std::vector<float> >(64,std::vector<float>()));
@@ -70,6 +68,20 @@ void GainAmp::AnaFile(std::string name) {
 
       _unpulsed_data.at(_crate).at(_slot).at(_femch).push_back(_amp);
       
+    }
+  }
+  // Loop over pulsed ch and insert 0 if no peak is found
+  for(size_t crate=0; crate<_mask.size(); ++crate) {
+    for(size_t slot=0; slot<_mask[crate].size(); ++slot) {
+
+      if(_pulsed_data.at(crate).size() <= slot)
+	_pulsed_data.at(crate).resize(slot+1,std::vector<std::vector<float> >(64,std::vector<float>()));
+      for(size_t ch=0; ch<_mask[crate][slot].size(); ++ch) {
+
+	if(_mask[crate][slot][ch] && !_pulsed_data[crate][slot][ch].size())
+	  
+	  _pulsed_data[crate][slot][ch].push_back(0);
+      }
     }
   }
 }
@@ -100,14 +112,18 @@ TGraph* GainAmp::PulsedGraph(int crate, int slot) {
   for(size_t i=0; i<64; ++i) {
 
     for(auto const& v : _pulsed_data[crate][slot][i]) {
-
       xarray.push_back(i);
       yarray.push_back(v);
     }
   }
 
+  if(!xarray.size()) {
+    std::cout<<"No data points."<<std::endl;
+    return nullptr;
+  }
   auto g = new TGraph(xarray.size(),&xarray[0],&yarray[0]);
   g->SetName(Form("gPulsed_%02d_%02d",crate,slot));
+  g->SetTitle("Pulse Amplitude (when pulsed); FEM Channel; Amplitude [ADC]");
   g->SetMarkerSize(1);
   g->SetMarkerStyle(20);
   g->SetMaximum(2000);
@@ -130,12 +146,19 @@ TGraph* GainAmp::UnPulsedGraph(int crate, int slot) {
     }
   }
 
+  if(!xarray.size()) {
+    std::cout<<"No data points."<<std::endl;
+    return nullptr;
+  }
+
   auto g = new TGraph(xarray.size(),&xarray[0],&yarray[0]);
   g->SetName(Form("gUnPulsed_%02d_%02d",crate,slot));
+  g->SetTitle("Pulse Amplitude (when not pulsed); FEM Channel; Amplitude [ADC]");
   g->SetMarkerStyle(20);
   g->SetMarkerSize(1);
   g->SetMaximum(2000);
   g->SetMinimum(0);
+
   return g;
 
 }

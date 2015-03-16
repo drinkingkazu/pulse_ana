@@ -61,7 +61,7 @@ void GainAmp::AnaFile(std::string name) {
 
       _pulsed_data.at(_crate).at(_slot).at(_femch).push_back(_amp);
 
-    }else if(_amp>5 && _amp > _ped_rms*5){
+    }else if(!pulsed && _amp>5 && _amp > _ped_rms*5){
 
       if(_unpulsed_data.at(_crate).size()<=_slot)
 	_unpulsed_data.at(_crate).resize(_slot+1,std::vector<std::vector<float> >(64,std::vector<float>()));
@@ -128,6 +128,7 @@ TGraph* GainAmp::PulsedGraph(int crate, int slot) {
   g->SetMarkerStyle(20);
   g->SetMaximum(2000);
   g->SetMinimum(0);
+  g->SetMarkerColor(kBlue);
   return g;
 
 }
@@ -158,7 +159,7 @@ TGraph* GainAmp::UnPulsedGraph(int crate, int slot) {
   g->SetMarkerSize(1);
   g->SetMaximum(2000);
   g->SetMinimum(0);
-
+  g->SetMarkerColor(kRed);
   return g;
 
 }

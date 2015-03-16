@@ -13,7 +13,7 @@ ch_ctr = {}
 for x in xrange(tch.GetEntries()):
 
     tch.GetEntry(x)
-    if tch.amp < 1000: continue
+    if tch.amp < 100: continue
 
     crate = tch.crate
     slot  = tch.slot

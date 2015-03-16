@@ -55,6 +55,9 @@ public:
   std::vector<std::vector<std::vector<std::vector<float> > > > _pulsed_data;
   std::vector<std::vector<std::vector<std::vector<float> > > > _unpulsed_data;
 
+  std::vector<std::vector<std::vector<float> > > _pulsed_max;
+  std::vector<std::vector<std::vector<float> > > _unpulsed_max;
+
 };
 
 #endif

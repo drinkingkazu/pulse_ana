@@ -27,4 +27,4 @@ for crate in crates:
             g2.Draw("AP")
 
         c.Update()
-        c.SaveAs("%s/Amp_%02d_%02d.eps" % (sys.argv[-1],crate,slot))
+        c.SaveAs("%s/Amp_%02d_%02d.png" % (sys.argv[-1],crate,slot))
